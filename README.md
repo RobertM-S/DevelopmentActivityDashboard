@@ -12,7 +12,7 @@ To run the project, add the GitHub owner, repo and api key variables to the AppR
 
 You can also build the jar file using ./mvnw clean package
 
-To run the jar file, use: java -jar target/asyncmethod-0.0.1-SNAPSHOT.jar
+To run the jar file, use: java -jar target/activitydashboard-0.0.1-SNAPSHOT.jar
 
 Once the Jar file is built, you can also pass the variables in as args instead of adding them to AppRunner but they must be added initially to have the program pass tests and build: java -jar target/asyncmethod-0.0.1-SNAPSHOT.jar {owner} {repo} {api key}
 
