@@ -4,7 +4,7 @@ This is a java project that uses GitHub api to retrieve data about a repository 
 
 This is the first commit for the project, default values are set to look at terraform repo for building the project, api key must be added.
 
-Start by building a docker instance of elastic search, this can be done by running curl -fsSL https://elastic.co/start-local | sh
+Start by building a docker instance of elastic search
 
 Import the project by using the pom.xml, this will build the dependencies
 
