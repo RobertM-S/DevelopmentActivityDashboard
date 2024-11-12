@@ -8,6 +8,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.message.BasicHeader;
 import org.elasticsearch.client.RestClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -20,10 +21,15 @@ public class AppRunner implements CommandLineRunner {
 
     private final GitHubLookupService gitHubLookupService;
 
+    @Value("${env.serverUrl}")
     private String serverUrl;
+    @Value("${env.owner}")
     private String owner;
+    @Value("${env.repo}")
     private String repo;
+    @Value("${env.apiKey}")
     private String apiKey;
+    @Value("${env.pageCount}")
     private int pageCount;
 
     /**
@@ -32,12 +38,6 @@ public class AppRunner implements CommandLineRunner {
     public AppRunner(GitHubLookupService gitHubLookupService) {
 
         this.gitHubLookupService = gitHubLookupService;
-        this.serverUrl = "http://localhost:9200";
-        this.owner = "hashicorp";
-        this.repo = "terraform";
-        // Example ApiKey, not valid
-        this.apiKey = "Q3BqbUhKTUI0a08yeWhCVEZGams6dk5KTUlDOU5TdnVzMlVUVW81dGc2QQ==";
-        this.pageCount = 2;
     }
 
     /**

@@ -1,0 +1,6 @@
+env:
+  serverUrl: ${LOCALHOST}
+  owner: ${OWNER}
+  repo: ${REPO}
+  apiKey: ${APIKEY}
+  pageCount: ${PAGECOUNT}
