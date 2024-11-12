@@ -78,6 +78,7 @@ public class AppRunner implements CommandLineRunner {
             // Wait until they are all done
             CompletableFuture.allOf(GitCommits, GitPulls, GitIssues, GitReleases).join();
 
+            // Send api returns to elastic search index methods
             ElasticIndex.indexCommits(client, GitCommits.get());
             ElasticIndex.indexPulls(client, GitPulls.get());
             ElasticIndex.indexIssues(client, GitIssues.get());
