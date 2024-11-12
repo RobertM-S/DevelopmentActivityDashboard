@@ -6,6 +6,7 @@ target/
 out
 .gitattributes
 .mvn
+src/main/resources/.env
 
 
 ### STS ###

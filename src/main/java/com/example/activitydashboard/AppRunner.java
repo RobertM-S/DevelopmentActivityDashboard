@@ -8,6 +8,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.message.BasicHeader;
 import org.elasticsearch.client.RestClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -20,10 +21,16 @@ public class AppRunner implements CommandLineRunner {
 
     private final GitHubLookupService gitHubLookupService;
 
+    @Value("${env.serverUrl}")
     private String serverUrl;
+    @Value("${env.owner}")
     private String owner;
+    @Value("${env.repo}")
     private String repo;
+    @Value("${env.apiKey}")
     private String apiKey;
+    @Value("${env.pageCount}")
+    private int pageCount;
 
     /**
      * Constructor method, defaults serverUrl to be changed later if passed in as an argument
@@ -31,11 +38,6 @@ public class AppRunner implements CommandLineRunner {
     public AppRunner(GitHubLookupService gitHubLookupService) {
 
         this.gitHubLookupService = gitHubLookupService;
-        this.serverUrl = "http://localhost:9200";
-        this.owner = "hashicorp";
-        this.repo = "terraform";
-        // Example ApiKey, not valid
-        this.apiKey = "";
     }
 
     /**
@@ -46,20 +48,14 @@ public class AppRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws InterruptedException, IOException, ExecutionException {
         // If values are passed in as arguments, sets variable equal to them otherwise uses the defaults
-        if (args.length == 3) {
+        if (args.length == 5) {
             owner = args[0];
             repo = args[1];
             apiKey = args[2];
+            serverUrl = args[3];
+            pageCount = Integer.parseInt(args[4]);
         }
-        // Sends a request for each api return
-        // I'm using separate methods and classes for each request as I believe that will be easiest to adapt instead of using one data class
-        CompletableFuture<GitCommitData[]> GitCommits = gitHubLookupService.findCommits(owner, repo);
-        CompletableFuture<GitPullsData[]> GitPulls = gitHubLookupService.findPulls(owner, repo);
-        CompletableFuture<GitIssuesData[]> GitIssues = gitHubLookupService.findIssues(owner, repo);
-        CompletableFuture<GitReleasesData[]> GitReleases = gitHubLookupService.findReleases(owner, repo);
 
-        // Wait until they are all done
-        CompletableFuture.allOf(GitCommits, GitPulls, GitIssues).join();
         // Creates the restClient to connect to elastic search local host
         RestClient restClient = RestClient
                 .builder(HttpHost.create(serverUrl))
@@ -70,10 +66,24 @@ public class AppRunner implements CommandLineRunner {
         // Uses Jackson to parse inputs such as Json
         ElasticsearchTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper());
         ElasticsearchClient client = new ElasticsearchClient(transport);
-        ElasticIndex.indexCommits(client, GitCommits.get());
-        ElasticIndex.indexPulls(client, GitPulls.get());
-        ElasticIndex.indexIssues(client, GitIssues.get());
-        ElasticIndex.indexReleases(client, GitReleases.get());
+
+        for (int currentPage = 1; currentPage < pageCount+1; currentPage++){
+            // Sends a request for each api return
+            // I'm using separate methods and classes for each request as I believe that will be easiest to adapt instead of using one data class
+            CompletableFuture<GitCommitData[]> GitCommits = gitHubLookupService.findCommits(owner, repo, currentPage);
+            CompletableFuture<GitPullsData[]> GitPulls = gitHubLookupService.findPulls(owner, repo, currentPage);
+            CompletableFuture<GitIssuesData[]> GitIssues = gitHubLookupService.findIssues(owner, repo, currentPage);
+            CompletableFuture<GitReleasesData[]> GitReleases = gitHubLookupService.findReleases(owner, repo, currentPage);
+
+            // Wait until they are all done
+            CompletableFuture.allOf(GitCommits, GitPulls, GitIssues, GitReleases).join();
+
+            // Send api returns to elastic search index methods
+            ElasticIndex.indexCommits(client, GitCommits.get());
+            ElasticIndex.indexPulls(client, GitPulls.get());
+            ElasticIndex.indexIssues(client, GitIssues.get());
+            ElasticIndex.indexReleases(client, GitReleases.get());
+        }
         restClient.close();
     }
 
