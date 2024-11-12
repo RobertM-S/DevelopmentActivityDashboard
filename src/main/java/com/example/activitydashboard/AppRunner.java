@@ -31,6 +31,8 @@ public class AppRunner implements CommandLineRunner {
     private String apiKey;
     @Value("${env.pageCount}")
     private int pageCount;
+    @Value("${env.index}")
+    private String index;
 
     /**
      * Constructor method, defaults serverUrl to be changed later if passed in as an argument
@@ -79,10 +81,10 @@ public class AppRunner implements CommandLineRunner {
             CompletableFuture.allOf(GitCommits, GitPulls, GitIssues, GitReleases).join();
 
             // Send api returns to elastic search index methods
-            ElasticIndex.indexCommits(client, GitCommits.get());
-            ElasticIndex.indexPulls(client, GitPulls.get());
-            ElasticIndex.indexIssues(client, GitIssues.get());
-            ElasticIndex.indexReleases(client, GitReleases.get());
+            ElasticIndex.indexCommits(client, GitCommits.get(), index);
+            ElasticIndex.indexPulls(client, GitPulls.get(), index);
+            ElasticIndex.indexIssues(client, GitIssues.get(), index);
+            ElasticIndex.indexReleases(client, GitReleases.get(), index);
         }
         restClient.close();
     }

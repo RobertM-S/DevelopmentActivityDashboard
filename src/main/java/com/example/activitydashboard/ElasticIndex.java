@@ -12,10 +12,10 @@ public class ElasticIndex {
      * @param gitData Object array containing commit response from GitHub api
      * @throws IOException
      */
-    public static void indexCommits(ElasticsearchClient client, GitCommitData[] gitData) throws IOException {
+    public static void indexCommits(ElasticsearchClient client, GitCommitData[] gitData, String stringIndex) throws IOException {
         for (GitCommitData data: gitData) {
             IndexResponse response = client.index(i -> i
-                    .index("gitterra")
+                    .index(stringIndex)
                     .id(data.getSha())
                     .document(data));        }
     }
@@ -25,10 +25,10 @@ public class ElasticIndex {
      * @param gitData Object array containing pull response from GitHub api
      * @throws IOException
      */
-    public static void indexPulls(ElasticsearchClient client, GitPullsData[] gitData) throws IOException {
+    public static void indexPulls(ElasticsearchClient client, GitPullsData[] gitData, String stringIndex) throws IOException {
         for (GitPullsData data: gitData) {
             IndexResponse response = client.index(i -> i
-                    .index("gitterra")
+                    .index(stringIndex)
                     .id(data.getId())
                     .document(data));        }
     }
@@ -38,10 +38,10 @@ public class ElasticIndex {
      * @param gitData Object array containing issue response from GitHub api
      * @throws IOException
      */
-    public static void indexIssues(ElasticsearchClient client, GitIssuesData[] gitData) throws IOException {
+    public static void indexIssues(ElasticsearchClient client, GitIssuesData[] gitData, String stringIndex) throws IOException {
         for (GitIssuesData data: gitData) {
             IndexResponse response = client.index(i -> i
-                    .index("gitterra")
+                    .index(stringIndex)
                     .id(data.getId())
                     .document(data));        }
     }
@@ -51,10 +51,10 @@ public class ElasticIndex {
      * @param gitData Object array containing release response from GitHub api
      * @throws IOException
      */
-    public static void indexReleases(ElasticsearchClient client, GitReleasesData[] gitData) throws IOException {
+    public static void indexReleases(ElasticsearchClient client, GitReleasesData[] gitData, String stringIndex) throws IOException {
         for (GitReleasesData data: gitData) {
             IndexResponse response = client.index(i -> i
-                    .index("gitterra")
+                    .index(stringIndex)
                     .id(data.getId())
                     .document(data));        }
     }

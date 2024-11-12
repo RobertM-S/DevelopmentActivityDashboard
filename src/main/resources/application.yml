@@ -4,3 +4,4 @@ env:
   repo: ${REPO}
   apiKey: ${APIKEY}
   pageCount: ${PAGECOUNT}
+  index: ${INDEX}
