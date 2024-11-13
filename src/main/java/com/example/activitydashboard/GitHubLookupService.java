@@ -22,7 +22,7 @@ public class GitHubLookupService {
      */
     public GitHubLookupService(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
-        this.perPage = 100;
+        this.perPage = 30;
     }
 
     /**

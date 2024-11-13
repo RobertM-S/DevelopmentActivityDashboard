@@ -69,22 +69,27 @@ public class AppRunner implements CommandLineRunner {
         ElasticsearchTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper());
         ElasticsearchClient client = new ElasticsearchClient(transport);
 
-        for (int currentPage = 1; currentPage < pageCount+1; currentPage++){
-            // Sends a request for each api return
-            // I'm using separate methods and classes for each request as I believe that will be easiest to adapt instead of using one data class
-            CompletableFuture<GitCommitData[]> GitCommits = gitHubLookupService.findCommits(owner, repo, currentPage);
-            CompletableFuture<GitPullsData[]> GitPulls = gitHubLookupService.findPulls(owner, repo, currentPage);
-            CompletableFuture<GitIssuesData[]> GitIssues = gitHubLookupService.findIssues(owner, repo, currentPage);
-            CompletableFuture<GitReleasesData[]> GitReleases = gitHubLookupService.findReleases(owner, repo, currentPage);
+        try{
+            for (int currentPage = 1; currentPage < pageCount+1; currentPage++){
+                // Sends a request for each api return
+                // I'm using separate methods and classes for each request as I believe that will be easiest to adapt instead of using one data class
+                CompletableFuture<GitCommitData[]> GitCommits = gitHubLookupService.findCommits(owner, repo, currentPage);
+                CompletableFuture<GitPullsData[]> GitPulls = gitHubLookupService.findPulls(owner, repo, currentPage);
+                CompletableFuture<GitIssuesData[]> GitIssues = gitHubLookupService.findIssues(owner, repo, currentPage);
+                CompletableFuture<GitReleasesData[]> GitReleases = gitHubLookupService.findReleases(owner, repo, currentPage);
 
-            // Wait until they are all done
-            CompletableFuture.allOf(GitCommits, GitPulls, GitIssues, GitReleases).join();
+                // Wait until they are all done
+                CompletableFuture.allOf(GitCommits, GitPulls, GitIssues, GitReleases).join();
 
-            // Send api returns to elastic search index methods
-            ElasticIndex.indexCommits(client, GitCommits.get(), index);
-            ElasticIndex.indexPulls(client, GitPulls.get(), index);
-            ElasticIndex.indexIssues(client, GitIssues.get(), index);
-            ElasticIndex.indexReleases(client, GitReleases.get(), index);
+                // Send api returns to elastic search index methods
+                ElasticIndex.indexCommits(client, GitCommits.get(), index);
+                ElasticIndex.indexPulls(client, GitPulls.get(), index);
+                ElasticIndex.indexIssues(client, GitIssues.get(), index);
+                ElasticIndex.indexReleases(client, GitReleases.get(), index);
+            }
+        } catch(Exception e) {
+            restClient.close();
+            throw new RuntimeException(e);
         }
         restClient.close();
     }
