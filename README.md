@@ -21,4 +21,7 @@ When passing in args, all values must be added otherwise it will default to what
 # Example Kibana Dashboard
 
 Shows number of pull requests, issues and releases against created_at date
+Diagram like this can be created by importing ﻿"created_at per 7 days","Top 6 values of type.keyword","Count of records" and changing breakdowns
 ![image](https://github.com/user-attachments/assets/70dcd513-ad25-4e97-a028-47109a0f2219)
+
+Many values are not as useful for visualisation such as title and body fields but I kept them in there as you may want to search for specific fields such as Feat and Fix if the repository is using convetional commits
