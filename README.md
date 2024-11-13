@@ -15,6 +15,7 @@ You can also build the jar file using mvn clean package, still requires the env 
 To run the jar file, use: java -jar ./target/activitydashboard-0.0.1-SNAPSHOT.jar
 
 Once the Jar file is built, you can also pass the variables in as args instead of adding them to .env: java -jar target/activitydashboard-0.0.1-SNAPSHOT.jar {owner} {repo} {api key} {localhost url} {page count}
+
 page count refers to the number of pages returned from GitHub api, records per page have been set to 100, this cna be changed in the GitHubLookupService constructor
 When passing in args, all values must be added otherwise it will default to what is in the .env
 
