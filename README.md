@@ -16,8 +16,9 @@ Once the Jar file is built, you can also pass the variables in as args instead o
 
 page count refers to the number of pages returned from GitHub api, records per page have been set to 30, this can be changed in the GitHubLookupService constructor.
 
-
 When passing in args, all values must be added otherwise it will default to what is in the .env
+
+After running code, navigate to localhost:5601 or other specified port for elastic, search for dashboard and create a visualisation. Create a new data view with your index from .env
 
 # Example Kibana Dashboard
 
